@@ -9,7 +9,8 @@ export const Navbar = () => {
             <div className="hidden lg:flex-1 lg:flex ">
                 Search
             </div>
-            
+             
+             
             <UserButton />
         </div>
     );
