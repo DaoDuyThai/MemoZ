@@ -10,6 +10,7 @@ export const Navbar = () => {
                 Search
             </div>
              
+
              
             <UserButton />
         </div>
