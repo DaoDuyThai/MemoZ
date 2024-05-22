@@ -3,11 +3,13 @@
 import { UserButton } from "@clerk/nextjs";
 
 import React from "react";
+import { SearchInput } from "./sidebar/search-input";
+
 export const Navbar = () => {
-    return(
+    return (
         <div className="flex items-center gap-x-4 p-5 ">
             <div className="hidden lg:flex-1 lg:flex ">
-                Search
+                <SearchInput />
             </div>
             <UserButton />
         </div>
