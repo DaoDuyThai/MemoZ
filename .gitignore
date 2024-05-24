@@ -1,2 +1,4 @@
 #convex denerated files
 memoz/convex/_generated/
+memoz/convex/_generated/api.d.ts
+memoz/convex/_generated/dataModel.d.ts
