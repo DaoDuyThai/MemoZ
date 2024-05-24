@@ -2,7 +2,7 @@
 
 import { EmptyFavorites } from "./empty-favorites";
 import { EmptySearch } from "./empty-search";
-import { EmptyBoards } from "./sidebar/empty-boards";
+import { EmptyBoards } from "./empty-boards";
 
 interface BoardListProps {
     orgId: string;
