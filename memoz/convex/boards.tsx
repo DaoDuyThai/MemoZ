@@ -4,6 +4,7 @@ import { query } from "./_generated/server";
 export const get = query({
     args: {
         orgId: v.string()
+        
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
