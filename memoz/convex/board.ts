@@ -134,6 +134,8 @@ export const unfavorite = mutation({
                     .eq("userId", userId)
                     .eq("boardId", board._id)
                     //TODO: check if orgId needed
+
+                    
             )
             .unique()
         if (!existingFavorite) {
