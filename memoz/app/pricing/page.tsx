@@ -53,14 +53,25 @@ const PricingPage = () => {
                 <EnterpriseGuard />
             </div>
             <div className="container mt-10">
+                <img src="blog.png" alt="new" className="rounded-lg border border-black object-cover" />
+            </div>
+            <div className="container mt-10">
                 <ChooseMiro />
             </div>
             <h1 className="text-5xl font-bold text-center mb-10 pt-10">FAQ</h1>
             <div className="container mt-10">
-                <Card title="How do I get started?" answer="When you sign up, you’re on the Free plan by default. The Free plan is designed for teams just starting out with visual collaboration: you can invite as many team members and create as many boards as you want, but only 3 boards will be active and editable at once. For more advanced collaboration functionality, check out our Starter, Business or Enterprise plans." />
-                <Card title="Can I change the team size?" answer="Yes, you can change your team size at any point during your subscription. You’ll be charged a prorated fee for adding new users and a refund on your next payment for removing users." />
-                <Card title="Is my data secure" answer="Yes, you can change your team size at any point during your subscription. You’ll be charged a prorated fee for adding new users and a refund on your next payment for removing users." />
-                <Card title="Does Miro integrate with my existing workflow?" answer="We have a full list of integrations through our Marketplace here. If you don’t see a tool for your workflow on the list or have an idea"/>
+                <Card
+                    title="Introducing Memoz?"
+                    answer={[
+                        "Is a project of group 2, Class 1715NJ - FPT University.",
+                        "MemoZ – a multi-user whiteboard designed to help people collaborate and create more effectively.",
+                        "MemoZ is a combination of the word Memo it means 'note'. And the letter Z for the whole word means Memory ."
+                    ]}
+                />
+                <Card title="How do I get started?" answer={["When you sign up, you’re on the Free plan by default. The Free plan is designed for teams just starting out with visual collaboration: you can invite as many team members and create as many boards as you want, but only 3 boards will be active and editable at once. For more advanced collaboration functionality, check out our Starter, Business or Enterprise plans."]} />
+                <Card title="Can I change the team size?" answer={["Yes, you can change your team size at any point during your subscription. You’ll be charged a prorated fee for adding new users and a refund on your next payment for removing users."]} />
+                <Card title="Is my data secure" answer={["Yes, you can change your team size at any point during your subscription. You’ll be charged a prorated fee for adding new users and a refund on your next payment for removing users."]} />
+                <Card title="Does Memoz integrate with my existing workflow?" answer={["We have a full list of integrations through our Marketplace here. If you don’t see a tool for your workflow on the list or have an idea"]} />
             </div>
 
         </div>
@@ -96,7 +107,7 @@ const EnterpriseGuard = (props: any) => {
                     Find and secure sensitive data, manage the lifecycle of content, and support legal discovery and preservation needs — automatically and at scale
                 </div>
                 <div className="flex space-x-4">
-                    <a href="#" className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">Contact us</a>
+                    <a href="/contact" className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">Contact us</a>
                     <a href="##" className="flex items-center text-blue-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
                         <span className="mr-2">Learn more</span>
                         {/* <span aria-hidden="true">→</span> */}
@@ -127,7 +138,7 @@ const ChooseMiro = (props: any) => {
     );
 };
 
-const Card = ({ title, answer }: { title: string ,answer: string }) => {
+const Card = ({ title, answer }: { title: string, answer: string[] }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const handleToggleExpand = () => {
@@ -148,7 +159,10 @@ const Card = ({ title, answer }: { title: string ,answer: string }) => {
             </div>
             {isExpanded && (
                 <div className="mt-4">
-                    <p className="text-gray-700">{answer}</p>
+                    {answer.map((line, index) => (
+                        <p key={index} className="text-gray-700">{line}</p>
+                    ))}
+
                 </div>
             )}
         </div>
