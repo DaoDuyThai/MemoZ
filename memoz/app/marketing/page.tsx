@@ -71,7 +71,7 @@ const MarketingPage = () => {
                     </CarouselContent>
                     <CarouselPrevious />
                     <CarouselNext />
-                </Carousel> 
+                </Carousel>
             </div>
             <div className="flex flex-col md:flex-row md:p-10">
                 <div className="space-y-5 md:w-1/2">
