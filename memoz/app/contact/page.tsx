@@ -49,15 +49,22 @@ const ContactPage = () => {
         }
 
     };
-   
+
 
     return (
         <div className="mx-auto px-4 pb-16 bg-amber-50">
             <div className="flex flex-col container  md:flex-row items-center bg-amber-50 p-6 h-screen">
                 <div className="md:w-1/2">
                     <h1 className="text-center mb-4 text-gray-800 text-4xl">Talk to our Sales team</h1>
-                    {/* <img src={'11.svg'} alt="Check Icon" width={24} height={24} className="mr-2 text-green-500" /> */}
-                    <p className=" p-4 text-gray-600 text-xl">Learn how your team can ramp up productivity with better collaboration.</p>
+
+                    <p className="p-4 text-gray-600 text-xl">
+                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" viewBox="0 0 24 24" className="icon icon-ds-200 icon-sw-150 icon-inherit undefined">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m5 11 5 5 9-9"></path>
+                            <path stroke="currentColor" stroke-width="2" d="M10 15.9999v.0001"></path>
+                        </svg> */}
+                        Learn how your team can ramp up productivity with better collaboration.
+                    </p>
+
                     <p className=" p-4 text-gray-600 text-xl">Watch Memoz in action with your own live demo, customized for your business.</p>
                     <p className=" p-4 text-gray-600 text-xl">See what scaling without friction looks like when you use Miro Enterprise to fit your exact needs.</p>
                     <img src="ideas.png" alt="new" className=" p-4 rounded-lg border border-black object-cover" />

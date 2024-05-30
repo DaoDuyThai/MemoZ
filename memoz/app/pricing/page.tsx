@@ -10,7 +10,10 @@ interface PricingPlan {
     features: string[];
     price: string;
     type: string;
+
 }
+
+
 
 const PricingPage = () => {
     const pricingPlans: PricingPlan[] = [
