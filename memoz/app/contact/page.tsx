@@ -93,6 +93,8 @@ const ContactPage = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
+
+                                
                                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                             </div>
                             <div className="mb-4">
@@ -123,7 +125,7 @@ const ContactPage = () => {
             </div>
         </div>
 
-        
+
     )
 }
 
