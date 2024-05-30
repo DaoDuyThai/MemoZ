@@ -20,22 +20,6 @@ Info.Skeleton = function InfoSkeleton(){
 
 
 
-
-
-
-
-//haduhakdhakld
-
-
-
-
-
-
-
-
-
-
-
         </div>
     )
 }
