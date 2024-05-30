@@ -17,6 +17,24 @@ Info.Skeleton = function InfoSkeleton(){
 
 
 
+
+
+
+
+
+
+
+
+
+//add
+
+
+
+
+
+
+
+
         </div>
     )
 }
