@@ -45,9 +45,7 @@ const ContactPage = () => {
         } else {
             console.log({ name, email, phone, message });
             setErrors({});
-
         }
-
     };
 
 
