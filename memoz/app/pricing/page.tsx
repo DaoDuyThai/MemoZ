@@ -44,7 +44,7 @@ const PricingPage = () => {
     ];
 
     return (
-        <div className="mx-auto px-4 pb-16 bg-amber-50">
+        <div className="mx-auto px-4 pb-16 bg-amber-50 ">
 
             <h1 className="text-3xl font-bold text-center mb-10 pt-10">Our Pricing Plans</h1>
             <div className="flex flex-wrap justify-center">
