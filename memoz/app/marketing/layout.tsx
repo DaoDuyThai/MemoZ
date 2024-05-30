@@ -23,6 +23,6 @@ const MarketingLayout = ({
         
         </main>
     )
-}
+} 
 
 export default MarketingLayout;
