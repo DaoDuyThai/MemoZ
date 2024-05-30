@@ -9,6 +9,7 @@ interface FormErrors {
     phone?: string;
     message?: string;
 }
+
 const ContactPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -48,7 +49,7 @@ const ContactPage = () => {
         }
     };
 
-    
+
     return (
         <div className="mx-auto px-4 pb-16 bg-amber-50">
             <div className="flex flex-col container  md:flex-row items-center bg-amber-50 p-6 h-screen">
