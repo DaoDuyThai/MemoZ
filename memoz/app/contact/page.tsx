@@ -17,7 +17,7 @@ const ContactPage = () => {
     const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState<FormErrors>({});
-    
+
 
     const validate = (): FormErrors => {
         const errors: FormErrors = {};
@@ -39,6 +39,7 @@ const ContactPage = () => {
         }
         return errors;
     };
+    
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
