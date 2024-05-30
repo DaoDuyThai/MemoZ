@@ -8,7 +8,7 @@ interface FormErrors {
     email?: string;
     phone?: string;
     message?: string;
-    
+
 }
 
 const ContactPage = () => {
@@ -17,6 +17,7 @@ const ContactPage = () => {
     const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState<FormErrors>({});
+    
 
     const validate = (): FormErrors => {
         const errors: FormErrors = {};
