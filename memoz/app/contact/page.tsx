@@ -21,6 +21,7 @@ const ContactPage = () => {
 
     const validate = (): FormErrors => {
         const errors: FormErrors = {};
+        
         if (!name) {
             errors.name = "Name is required";
         }
@@ -55,7 +56,7 @@ const ContactPage = () => {
         <div className="mx-auto px-4 pb-16 bg-amber-50">
             <div className="flex flex-col container  md:flex-row items-center bg-amber-50 p-6 h-screen">
                 <div className="md:w-1/2">
-                    
+
                     <h1 className="text-center mb-4 text-gray-800 text-4xl">Talk to our Sales team</h1>
 
                     <p className="p-4 text-gray-600 text-xl">
