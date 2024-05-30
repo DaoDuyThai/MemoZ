@@ -61,7 +61,7 @@ const PricingPage = () => {
             <div className="container mt-10">
                 <ChooseMiro />
             </div>
-            <h1 className="text-5xl font-bold text-center mb-10 pt-10">FAQ</h1>
+            <h1 className="text-5xl font-bold text-center mb-10 pt-10 ">FAQ</h1>
             <div className="container mt-10">
                 <Card
                     title="Introducing Memoz?"
