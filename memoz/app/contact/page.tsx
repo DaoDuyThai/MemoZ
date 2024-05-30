@@ -47,6 +47,8 @@ const ContactPage = () => {
             setErrors({});
         }
     };
+
+    
     return (
         <div className="mx-auto px-4 pb-16 bg-amber-50">
             <div className="flex flex-col container  md:flex-row items-center bg-amber-50 p-6 h-screen">
