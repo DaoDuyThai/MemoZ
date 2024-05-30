@@ -8,6 +8,7 @@ interface FormErrors {
     email?: string;
     phone?: string;
     message?: string;
+    
 }
 
 const ContactPage = () => {
