@@ -14,6 +14,7 @@ interface FormErrors {
 const ContactPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    
     const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState<FormErrors>({});
@@ -21,7 +22,7 @@ const ContactPage = () => {
 
     const validate = (): FormErrors => {
         const errors: FormErrors = {};
-        
+
         if (!name) {
             errors.name = "Name is required";
         }
