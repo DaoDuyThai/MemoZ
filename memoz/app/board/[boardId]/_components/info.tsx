@@ -15,6 +15,7 @@ Info.Skeleton = function InfoSkeleton(){
             <Skeleton className="h-full w-full bg-muted-400"/>
         
         
+
         </div>
     )
 }
