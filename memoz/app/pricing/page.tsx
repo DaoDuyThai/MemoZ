@@ -51,6 +51,7 @@ const PricingPage = () => {
                 {pricingPlans.map((plan, index) => (
                     <PricingCard key={index} plan={plan} />
                 ))}
+                
             </div>
             <div className="container mt-10">
                 <EnterpriseGuard />
