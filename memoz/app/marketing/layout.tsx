@@ -22,7 +22,7 @@ const MarketingLayout = ({
             <Footer />
         
         </main>
-    )
+    ) 
 } 
 
 export default MarketingLayout;
