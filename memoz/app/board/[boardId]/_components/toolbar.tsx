@@ -1,5 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
-
+"use client"
 export const Toolbar = () => {
     return (
         <div className="absolute top-[50%] -translate-y[50%] left-2 flex flex-col gap-y-4">
@@ -29,7 +28,8 @@ export const Toolbar = () => {
     )
 }
 
-Toolbar.Skeleton = function ToolbarSkeleton() {
+export const ToolbarSkeleton = function ToolbarSkeleton() {
+
     return (
         <div className="absolute top-[50%] -translate-y[50%] left-2 flex flex-col gap-y-4 shadow-md rounded-md bg-white h-[360px] w-[52px]"
         />
