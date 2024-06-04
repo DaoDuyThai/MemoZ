@@ -35,9 +35,12 @@ export async function POST(request: Request) {
     //     userOrgId: authorization.orgId
     // })
 
+    //authorize user into my organization
     if (board?.orgId !== authorization.orgId) {
         return new Response("Unauthorized", { status: 403 })
     }
+
+
     const userInfo = {
         name: user.firstName || "Anonymous",
         picture: user.imageUrl
