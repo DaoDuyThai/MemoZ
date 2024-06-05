@@ -1,3 +1,4 @@
+import { colorToCss } from "@/lib/utils";
 import { RectangleLayer } from "@/types/canvas";
 
 
@@ -22,12 +23,12 @@ export const Rectangle = ({
             onPointerDown={(e) => onPointerDown(e, id)}
             style={{
                 transform: `translate(${x}px, ${y}px)`
-            }} 
+            }}
             x={0} y={0}
             width={width}
             height={height}
             strokeWidth={1}
-            fill="#000"
-            stroke="transparent"/>
+            fill={fill ? colorToCss(fill) : "#000"}
+            stroke={selectionColor || "transparent"} />
     )
 }
