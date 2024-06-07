@@ -15,6 +15,7 @@ import { set } from "date-fns"
 import { LiveObject } from "@liveblocks/client"
 import { LayerPreview } from "./layer-preview"
 import { SelectionBox } from "./selection-box"
+import { SelectionTools } from "./selection-tools"
 
 const MAX_LAYERS = 100;
 
@@ -253,6 +254,9 @@ export const Canvas = ({
                 canUndo={canUndo}
                 redo={history.redo}
                 undo={history.undo} />
+            <SelectionTools
+                camera={camera}
+                setLastUsedColor={setLastUsedColor} />
             <svg
                 className="h-[100vh] w-[100vw]"
                 onWheel={onWheel}
@@ -261,6 +265,7 @@ export const Canvas = ({
                 onPointerUp={onPointerUp}
                 onPointerDown={onPointerDown}
             >
+
                 <g style={{ transform: `translate(${camera.x}px, ${camera.y}px)` }}>
                     {layerIds.map((layerId) => (
                         <LayerPreview
