@@ -76,8 +76,8 @@ export const Toolbar = ({
                     label="Ellipse"
                     icon={Circle}
                     onClick={() => setCanvasState({
-                        mode: CanvasMode.Pencil
-
+                        mode: CanvasMode.Inserting,
+                        layerType: LayerType.Ellipse
                     })} />
                 <ToolButton
                     isActive={
