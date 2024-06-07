@@ -35,7 +35,7 @@ export const LayerPreview = memo(({
                 />
             )
         default:
-            console.warn("Unknown layer type", layer)
+            // console.warn("Unknown layer type", layer)
     }
 })
 
