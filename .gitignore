@@ -1,3 +1,4 @@
 #convex denerated files
 memoz/convex/_generated/
 /memoz/convex/_generated
+memoz/.env.local
