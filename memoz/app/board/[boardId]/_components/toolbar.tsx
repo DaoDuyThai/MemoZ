@@ -80,15 +80,15 @@ export const Toolbar = ({
                         layerType: LayerType.Ellipse
                     })} />
                 <ToolButton
-                    isActive={
-                        canvasState.mode === CanvasMode.Inserting &&
-                        canvasState.layerType === LayerType.Ellipse
-                    }
                     label="Pen"
                     icon={Pencil}
                     onClick={() => setCanvasState({
                         mode: CanvasMode.Pencil
-                    })} />
+                    })}
+                    isActive={
+                        canvasState.mode === CanvasMode.Pencil
+                    }
+                />
 
 
             </div>
