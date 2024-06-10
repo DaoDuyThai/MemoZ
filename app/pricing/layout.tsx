@@ -7,6 +7,8 @@ const PricingLayout = ({
 }: PricingLayoutProps) => {
     return (
         <>
+
+        
             {children}
         </>
     )
