@@ -3,7 +3,7 @@ import { createRoomContext, createLiveblocksContext } from "@liveblocks/react";
 
 import { Layer, Color } from "@/types/canvas"
 
-const client = createClient({ 
+const client = createClient({
   throttle: 60,
   authEndpoint: "/api/liveblocks-auth",
 });
