@@ -4,6 +4,6 @@ const Footer = () => {
             {/* Footer */} 
         </div> 
     )
-} 
+}  
  
 export default Footer;
