@@ -27,6 +27,7 @@ export default defineSchema({
         .index("by_user_board_org", ["userId", "boardId", "orgId"]),
     messages: defineTable({
         authorId: v.string(),
+        organizationId: v.optional(v.string()),
         body: v.string(),
     })   
 })
