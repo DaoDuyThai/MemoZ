@@ -1,8 +1,9 @@
 "use client"
 
-import { Circle, MousePointer2, Pencil, Redo2, Square, StickyNote, Type, Undo2 } from "lucide-react"
+import { Circle, Mic, MicOff, MousePointer2, Pencil, Redo2, Square, StickyNote, Type, Undo2 } from "lucide-react"
 import { ToolButton } from "./tool-button"
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas"
+import { useState } from "react"
 
 interface ToolbarProps {
     canvasState: CanvasState,
@@ -21,6 +22,10 @@ export const Toolbar = ({
     canUndo,
     canRedo
 }: ToolbarProps) => {
+    const [clickVoice, setClickVoice] = useState(false);
+    const handleVoice = () => {
+        
+    }
     return (
         <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4">
             <div className="bg-white rounded-md p-1.5 flex gap-y-1 flex-col items-center shadow-md">
@@ -102,6 +107,12 @@ export const Toolbar = ({
                     isDisabled={!canRedo}
                     label="Redo" icon={Redo2}
                     onClick={redo} />
+            </div>
+            <div className="bg-white rounded-md p-1.5 flex flex-col items-center shadow-md">
+                <ToolButton
+                    isDisabled={false}
+                    label="Mic" icon={clickVoice ? Mic : MicOff }
+                    onClick={() => setClickVoice(!clickVoice)} />
             </div>
         </div>
     )
