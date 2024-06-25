@@ -209,6 +209,7 @@ export const Toolbar = ({
                     label="Mic" icon={clickVoice ? Mic : MicOff}
                     onClick={() => handleVoice()} />
                 <button id="join">Join</button>
+                <button id="leave">Leave</button>
             </div>
         </div>
     )
