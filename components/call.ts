@@ -18,32 +18,31 @@ const options = {
     // Pass your temp token here.
     token: process.env.NEXT_PUBLIC_AGORA_TOKEN || "007eJxTYPhZ3s6xliNgX6Rmm0CJABvHdKvfqdECSt3r9Rv2lZi5vldgsDA1TEw2NTdINUwyN0m1SEtKMTYwNEhOSUs0MjdIMzDYb1qV1hDIyLDNSoOZkQECQXxWhrL8zORUBgYAbCccfQ",
 };
-async function listenToCall() {
 
-    rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
-    // Listen for the "user-published" event, from which you can get an AgoraRTCRemoteUser object.
-    rtc.client.on("user-published", async (user: any, mediaType: any) => {
-        // Subscribe to the remote user when the SDK triggers the "user-published" event
-        await rtc.client.subscribe(user, mediaType);
-        console.log("subscribe success");
+// Listen for the "user-published" event, from which you can get an AgoraRTCRemoteUser object.
+rtc.client.on("user-published", async (user: any, mediaType: any) => {
+    // Subscribe to the remote user when the SDK triggers the "user-published" event
+    await rtc.client.subscribe(user, mediaType);
+    console.log("subscribe success");
 
-        // If the remote user publishes an audio track.
-        if (mediaType === "audio") {
-            console.log("audio track remote");
-            
-            // Get the RemoteAudioTrack object in the AgoraRTCRemoteUser object.
-            const remoteAudioTrack = user.audioTrack;
-            // Play the remote audio track.
-            remoteAudioTrack.play();
-        }
-    });
-    // Listen for the "user-unpublished" event
-    rtc.client.on("user-unpublished", async (user: any) => {
-        // Unsubscribe from the tracks of the remote user.
-        await rtc.client.unsubscribe(user);
-    });
-}
+    // If the remote user publishes an audio track.
+    if (mediaType === "audio") {
+        console.log("audio track remote");
+
+        // Get the RemoteAudioTrack object in the AgoraRTCRemoteUser object.
+        const remoteAudioTrack = user.audioTrack;
+        // Play the remote audio track.
+        remoteAudioTrack.play();
+    }
+});
+// Listen for the "user-unpublished" event
+rtc.client.on("user-unpublished", async (user: any) => {
+    // Unsubscribe from the tracks of the remote user.
+    await rtc.client.unsubscribe(user);
+});
+
 
 
 async function joinBasicCall(userId: string) {
@@ -65,4 +64,4 @@ async function leaveBasicCall() {
     await rtc.client.leave();
 }
 
-export { listenToCall, joinBasicCall, leaveBasicCall };
+export { joinBasicCall, leaveBasicCall };
