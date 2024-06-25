@@ -5,7 +5,7 @@ import { ToolButton } from "./tool-button"
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import { joinBasicCall, leaveBasicCall, listenToCall } from "@/components/call"
+import { joinBasicCall, leaveBasicCall } from "@/components/call"
 import { list } from "postcss"
 import AgoraRTC from "agora-rtc-sdk-ng";
 
@@ -30,11 +30,11 @@ export const Toolbar = ({
     const [clickVoice, setClickVoice] = useState(false);
     const { user } = useUser();
 
-    
+
 
     const handleVoice = () => {
         setClickVoice(!clickVoice);
-        if(!clickVoice) {
+        if (!clickVoice) {
             joinBasicCall(user?.id.toString() || "123");
         } else {
             leaveBasicCall();
@@ -128,8 +128,6 @@ export const Toolbar = ({
                     isDisabled={false}
                     label="Mic" icon={clickVoice ? Mic : MicOff}
                     onClick={() => handleVoice()} />
-                {/* <button id="join">Join</button>
-                <button id="leave">Leave</button> */}
             </div>
         </div>
     )

@@ -1,5 +1,6 @@
 'use client';
 import { api } from "@/convex/_generated/api"
+import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react"
 import { useEffect, useState } from "react";
 // import "./css/chat.css";
@@ -7,11 +8,13 @@ export default function Chart({roomId} : {roomId: string}) {
     const messages = useQuery(api.messages.getByOrganizationId, { organizationId: roomId });
     const sendMessage = useMutation(api.messages.send);
     const [newMessageText, setNewMessageText] = useState("");
-
+    const { user } = useUser();
+    const userName = user?.fullName || user?.username || "Anonymous";
 
     useEffect(() => {
         const hideButton = document.getElementById("hideButton");
         const messagesContent = document.getElementById("messages-content");
+        
         setTimeout(() => {
             window.scrollTo({ top: messagesContent?.scrollHeight, behavior: "smooth" });
         }, 0);
@@ -47,7 +50,7 @@ export default function Chart({roomId} : {roomId: string}) {
                 </div>
                 <form className="absolute left-0 bottom-0 w-full content border-2 border-slate-300 p-2 bg-white" onSubmit={async (e) => {
                     e.preventDefault();
-                    await sendMessage({ body: newMessageText, authorId: "user1", organizationId: roomId});
+                    await sendMessage({ body: newMessageText, authorId: userName, organizationId: roomId});
                     setNewMessageText("");
                 }}>
                     <input
