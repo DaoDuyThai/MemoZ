@@ -1,58 +1,121 @@
 "use client";
 
-import { useState } from "react";
-
-
-
+import { useState, useEffect } from "react";
+import axios from 'axios';
+import { Modal, Button } from 'antd';
 
 interface PricingPlan {
     name: string;
     features: string[];
-    price: string;
+    price: number;
     type: string;
-
 }
-
-
 
 const PricingPage = () => {
     const pricingPlans: PricingPlan[] = [
         {
             name: 'Free Plan',
             features: ['Discover what Miro can do for you and your team. Always free '],
-            price: '0$',
+            price: 10000,
             type: 'Free'
         },
         {
             name: 'Starter Plan',
             features: ['Unlock unlimited and private boards with essential features '],
-            price: '10$',
+            price: 5000,
             type: 'Buy Starter'
         },
         {
             name: 'Pro Plan',
             features: ['Scale collaboration beyond your team with advanced features and security'],
-            price: '100$',
+            price: 6000,
             type: 'Try it free'
         },
         {
             name: 'Enterprise Plan',
             features: ['Work across your entire organization, with support, security and control, to scale'],
-            price: '0$',
-            type: 'Contact us'
+            price: 10000,
+            type: 'Buy Enterprise'
         }
     ];
 
-    return (
-        <div className="mx-auto px-4 pb-16 bg-amber-50 ">
+    const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
+    const [qrUrl, setQrUrl] = useState('');
+    const [transactionId, setTransactionId] = useState('');
+    const [paymentStatus, setPaymentStatus] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
+    const handlePayment = async (plan: PricingPlan) => {
+        try {
+            const response = await axios.post('http://localhost:9999/create-vietqr', {
+                amount: plan.price,
+                courseName: plan.name
+            });
+            setQrUrl(response.data.qrUrl);
+            setTransactionId(response.data.transactionId);
+            setSelectedPlan(plan);
+            setPaymentStatus('Đang chờ thanh toán...');
+            setIsModalVisible(true);
+        } catch (error) {
+            console.error('Error generating QR code:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (!transactionId) return;
+
+        const interval = setInterval(async () => {
+            try {
+                const response = await axios.get(`http://localhost:9999/check-transaction-status/${transactionId}`);
+                const status = response.data.status;
+
+                if (status === 'success') {
+                    setPaymentStatus('Thanh toán thành công!');
+                    clearInterval(interval);
+                } else if (status === 'failed') {
+                    setPaymentStatus('Thanh toán thất bại. Vui lòng thử lại.');
+                    clearInterval(interval);
+                } else {
+                    setPaymentStatus('Đang chờ thanh toán...');
+                }
+            } catch (error) {
+                console.error('Error checking transaction status:', error);
+                setPaymentStatus('Có lỗi xảy ra. Vui lòng thử lại.');
+                clearInterval(interval);
+            }
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [transactionId]);
+
+    return (
+        <div className="mx-auto px-4 pb-16 bg-amber-50">
             <h1 className="text-3xl font-bold text-center mb-10 pt-10">Our Pricing Plans</h1>
             <div className="flex flex-wrap justify-center">
                 {pricingPlans.map((plan, index) => (
-                    <PricingCard key={index} plan={plan} />
+                    <PricingCard key={index} plan={plan} onPay={handlePayment} />
                 ))}
-                
             </div>
+            <Modal
+                title={`QR Code cho ${selectedPlan?.name}`}
+                open={isModalVisible}
+                onCancel={() => setIsModalVisible(false)}
+                footer={[
+                    <Button key="close" onClick={() => setIsModalVisible(false)}>
+                        Đóng
+                    </Button>,
+                ]}
+            >
+                {paymentStatus === 'Đang chờ thanh toán...' ?
+                    <div className="text-center">
+                        {qrUrl && <img src={qrUrl} alt="QR Code" className="mx-auto mb-4" />}
+                        <p>{paymentStatus}</p>
+                    </div>
+                    :
+                    <p className="text-center text-xl text-green-500">{paymentStatus}</p>
+                }
+
+            </Modal>
             <div className="container mt-10">
                 <EnterpriseGuard />
             </div>
@@ -77,14 +140,13 @@ const PricingPage = () => {
                 <Card title="Is my data secure" answer={["Yes, you can change your team size at any point during your subscription. You’ll be charged a prorated fee for adding new users and a refund on your next payment for removing users."]} />
                 <Card title="Does Memoz integrate with my existing workflow?" answer={["We have a full list of integrations through our Marketplace here. If you don’t see a tool for your workflow on the list or have an idea"]} />
             </div>
-
         </div>
     );
 };
 
-const PricingCard = ({ plan }: { plan: PricingPlan }) => {
+const PricingCard = ({ plan, onPay }: { plan: PricingPlan, onPay: (plan: PricingPlan) => void }) => {
     return (
-        <div className="flex flex-col  bg-white shadow-md rounded-lg p-6 mb-8 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 mx-4 border border-black">
+        <div className="flex flex-col bg-white shadow-md rounded-lg p-6 mb-8 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 mx-4 border border-black">
             <h3 className="text-lg font-bold mb-4">{plan.name}</h3>
             <ul className="flex-grow">
                 {plan.features.map((feature, index) => (
@@ -94,7 +156,10 @@ const PricingCard = ({ plan }: { plan: PricingPlan }) => {
             <div className="flex justify-center items-center">
                 <span className="text-3xl font-bold text-gray-900">{plan.price}</span>
             </div>
-            <button className="mt-4 w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600">
+            <button
+                className="mt-4 w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600"
+                onClick={() => onPay(plan)}
+            >
                 {plan.type}
             </button>
         </div>
@@ -119,7 +184,7 @@ const EnterpriseGuard = (props: any) => {
                 </div>
             </div>
             <div className="md:w-1/2 flex justify-center">
-                <img src="logo.png" alt="Enterprise Guard" className="rounded-lg  object-cover" />
+                <img src="logo.png" alt="Enterprise Guard" className="rounded-lg object-cover" />
             </div>
         </div>
     );
@@ -136,7 +201,7 @@ const ChooseMiro = (props: any) => {
                 </div>
             </div>
             <div className="md:w-1/2 flex justify-center">
-                <img src="why_miro.png" alt="Enterprise Guard" className="rounded-lg  object-cover" />
+                <img src="why_miro.png" alt="Enterprise Guard" className="rounded-lg object-cover" />
             </div>
         </div>
     );
@@ -148,6 +213,7 @@ const Card = ({ title, answer }: { title: string, answer: string[] }) => {
     const handleToggleExpand = () => {
         setIsExpanded(!isExpanded);
     };
+
     return (
         <div className={`flex flex-col bg-gray-200 rounded-lg p-10 mb-4 ${isExpanded ? 'mb-8' : ''}`}>
             <div className="flex items-center justify-between cursor-pointer" onClick={handleToggleExpand}>
@@ -166,15 +232,10 @@ const Card = ({ title, answer }: { title: string, answer: string[] }) => {
                     {answer.map((line, index) => (
                         <p key={index} className="text-gray-700">{line}</p>
                     ))}
-
                 </div>
             )}
         </div>
     );
 };
-
-
-
-
 
 export default PricingPage;
