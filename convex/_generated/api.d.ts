@@ -17,6 +17,7 @@ import type {
 import type * as board from "../board.js";
 import type * as boards from "../boards.js";
 import type * as messages from "../messages.js";
+import type * as voice from "../voice.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   board: typeof board;
   boards: typeof boards;
   messages: typeof messages;
+  voice: typeof voice;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

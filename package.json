@@ -19,6 +19,8 @@
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "agora-access-token": "^2.0.4",
+    "agora-rtc-sdk-ng": "latest",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "convex": "^1.11.3",
@@ -40,8 +42,7 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.0",
-    "zustand": "^4.5.2",
-    "agora-rtc-sdk-ng": "latest"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20",

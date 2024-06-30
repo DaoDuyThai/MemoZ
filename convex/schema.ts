@@ -1,7 +1,6 @@
 import { v } from "convex/values"
 
 import { defineSchema, defineTable } from "convex/server"
-import { userAgent } from "next/server"
 
 export default defineSchema({
     boards: defineTable({
@@ -29,5 +28,9 @@ export default defineSchema({
         authorId: v.string(),
         organizationId: v.optional(v.string()),
         body: v.string(),
+    }),
+    voice : defineTable({
+        channel: v.string(),
+        token: v.string(),
     })   
 })

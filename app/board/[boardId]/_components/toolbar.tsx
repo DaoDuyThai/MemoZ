@@ -5,9 +5,10 @@ import { ToolButton } from "./tool-button"
 import { CanvasMode, CanvasState, LayerType } from "@/types/canvas"
 import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import { joinBasicCall, leaveBasicCall } from "@/components/call"
-import { list } from "postcss"
-import AgoraRTC from "agora-rtc-sdk-ng";
+import { generateToken, joinBasicCall, leaveBasicCall } from "@/components/call"
+import { useMutation, useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useParams } from "next/navigation"
 
 
 interface ToolbarProps {
@@ -28,14 +29,42 @@ export const Toolbar = ({
     canRedo
 }: ToolbarProps) => {
     const [clickVoice, setClickVoice] = useState(false);
+
     const { user } = useUser();
+    const params = useParams<{ boardId: string }>();
+    const voice = useQuery(api.voice.getByChannel, { channel: params.boardId });
+    const sendVoice = useMutation(api.voice.setToken);
+    useEffect(() => {
+        try {
+            if (voice == null) {
+                const token = generateToken(params.boardId, 840000);
+                if (token !== "") {
+                    sendVoice({ channel: params.boardId, token, expire: Date.now() + 840000 });
+                }
+            } else if (voice?.expire > Date.now()) {
+                const token = generateToken(params.boardId, 840000);
+                if (token !== "") {
+                    sendVoice({ channel: params.boardId, token, expire: Date.now() + 840000 });  
+                }
+            }
+            else {
+                if (user?.id.toString()) {
+                    joinBasicCall(user?.id.toString(), params.boardId);
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }, [])
 
 
 
     const handleVoice = () => {
         setClickVoice(!clickVoice);
         if (!clickVoice) {
-            joinBasicCall(user?.id.toString() || "123");
+
+
         } else {
             leaveBasicCall();
         }
