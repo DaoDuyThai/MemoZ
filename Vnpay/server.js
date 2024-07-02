@@ -98,8 +98,10 @@ const generateRTCToken = (req, resp) => {
   const privilegeExpireTime = currentTime + expireTime;
   let token;
   if (req.params.tokentype === 'userAccount') {
+    
     token = RtcTokenBuilder.buildTokenWithAccount(process.env.APP_ID, process.env.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
   } else if (req.params.tokentype === 'uid') {
+    console.log(`App ID: ${process.env.APP_ID}`);
     token = RtcTokenBuilder.buildTokenWithUid(process.env.APP_ID, process.env.APP_CERTIFICATE, channelName, uid, role, privilegeExpireTime);
   } else {
     return resp.status(500).json({ 'error': 'token type is invalid' });

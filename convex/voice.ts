@@ -6,7 +6,7 @@ export const getByChannel = query({
         channel: v.string(),
     },
     handler: async (ctx, {channel}) => {
-        const voice = await ctx.db.query("voice").filter((q) => q.eq(q.field("channel"), channel)).order("desc").take(100);
+        const voice = await ctx.db.query("voice").filter((q) => q.eq(q.field("channel"), channel)).order("desc").take(1);
         return voice;
     }
 });

@@ -52,17 +52,22 @@ rtc.client.on("user-unpublished", async (user: any) => {
  * @param userId 
  * @param channel 
  */
-async function joinBasicCall(userId: string, channel: string) {
+async function joinBasicCall(userId: string, channel: string, token: string) {
     // Join an RTC channel.
-    await rtc.client.join(options.appId, channel, options.token, userId);
+    await rtc.client.join(options.appId, channel, token, userId);
     // Create a local audio track from the audio sampled by a microphone.
     rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+    rtc.localAudioTrack.setMuted(true);
     // Publish the local audio tracks to the RTC channel.
     await rtc.client.publish([rtc.localAudioTrack]);
     console.log("publish success!");
 }
 
 
+/**
+ * @description Leave the basic call
+ * @returns void
+ */
 async function leaveBasicCall() {
     if (rtc) {
         // Destroy the local audio track.

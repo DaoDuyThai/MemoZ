@@ -1,6 +1,7 @@
 import { v } from "convex/values"
 
 import { defineSchema, defineTable } from "convex/server"
+import exp from "constants"
 
 export default defineSchema({
     boards: defineTable({
@@ -32,5 +33,6 @@ export default defineSchema({
     voice : defineTable({
         channel: v.string(),
         token: v.string(),
+        expire: v.number(),
     })   
 })

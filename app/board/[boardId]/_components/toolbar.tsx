@@ -9,6 +9,7 @@ import { generateToken, joinBasicCall, leaveBasicCall } from "@/components/call"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { useParams } from "next/navigation"
+import { join } from "path"
 
 
 interface ToolbarProps {
@@ -29,36 +30,48 @@ export const Toolbar = ({
     canRedo
 }: ToolbarProps) => {
     const [clickVoice, setClickVoice] = useState(false);
-
     const { user } = useUser();
     const params = useParams<{ boardId: string }>();
     const voice = useQuery(api.voice.getByChannel, { channel: params.boardId });
     const sendVoice = useMutation(api.voice.setToken);
+
     useEffect(() => {
-        try {
-            if (voice == null) {
-                const token = generateToken(params.boardId, 840000);
-                if (token !== "") {
-                    sendVoice({ channel: params.boardId, token, expire: Date.now() + 840000 });
+        function joinCall() {
+            try {
+                if (voice == null) {
+                    const token = generateToken(params.boardId, 840000);
+                    if (token !== "") {
+                        sendVoice({ channel: params.boardId, token, expire: Date.now() + 840000 });
+                        if (user?.id) {
+                            joinBasicCall(user?.id, "test", "006851ac570e1b74e8fbd3010cdfa270f00IADvtcETqaoxiLnk7BBnFHmGLRuwGB1AbRTQuk5euidBHwx+f9i379yDIgDATFRtZ22DZgQAAQAn7Y5mAgAn7Y5mAwAn7Y5mBAAn7Y5m");
+                            // leaveBasicCall();
+                        }
+                    }
+                } else if (voice[0]?.expire > Date.now()) {
+                    const token = generateToken(params.boardId, 840000);
+                    if (token !== "") {
+                        sendVoice({ channel: params.boardId, token, expire: Date.now() + 840000 });
+                        if (user?.id.toString()) {
+                            joinBasicCall(user?.id.toString(), params.boardId, token);
+                        }
+                    }
+                } else {
+                    if (user?.id.toString()) {
+                        joinBasicCall(user?.id.toString(), params.boardId, voice[0]?.token);
+                    }
                 }
-            } else if (voice?.expire > Date.now()) {
-                const token = generateToken(params.boardId, 840000);
-                if (token !== "") {
-                    sendVoice({ channel: params.boardId, token, expire: Date.now() + 840000 });  
+                return () => {
+                    if (voice) {
+                        leaveBasicCall();
+                    }
                 }
+            } catch (error) {
+                console.log(error);
             }
-            else {
-                if (user?.id.toString()) {
-                    joinBasicCall(user?.id.toString(), params.boardId);
-                }
-            }
-
-        } catch (error) {
-            console.log(error);
         }
-    }, [])
 
-
+        joinCall();
+    }, []);
 
     const handleVoice = () => {
         setClickVoice(!clickVoice);
@@ -163,9 +176,7 @@ export const Toolbar = ({
 }
 
 export const ToolbarSkeleton = function ToolbarSkeleton() {
-
     return (
-        <div className="absolute top-[50%] -translate-y[50%] left-2 flex flex-col gap-y-4 shadow-md rounded-md bg-white h-[360px] w-[52px]"
-        />
+        <div className="absolute top-[50%] -translate-y[50%] left-2 flex flex-col gap-y-4 shadow-md rounded-md bg-white h-[360px] w-[52px]" />
     )
 }
