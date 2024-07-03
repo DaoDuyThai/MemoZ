@@ -5,6 +5,7 @@ import { Plus } from "lucide-react"
 import { api } from "@/convex/_generated/api"
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { toast } from "sonner"
+import { useProModal } from "@/store/use-pro-modal"
 
 interface NewBoardButtonProps {
     orgId: string,
@@ -16,6 +17,7 @@ export const NewBoardButton = ({
     orgId,
     disabled
 }: NewBoardButtonProps) => {
+    const {onOpen} = useProModal();
     const { mutate, pending } = useApiMutation(api.board.create);
 
 
@@ -31,6 +33,7 @@ export const NewBoardButton = ({
             })
             .catch(() => {
                 toast.error("Failed to create board")
+                onOpen();
             })
     }
     return (

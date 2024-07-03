@@ -22,7 +22,6 @@ export const EmptyBoards = () => {
         })
         .catch(() =>{
             toast.error("Failed to create board")
-        
         })
     }
     return (
