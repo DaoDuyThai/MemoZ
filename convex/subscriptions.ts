@@ -1,6 +1,24 @@
 import { v } from "convex/values"
 
-import { internalMutation } from "./_generated/server"
+import { internalMutation, query } from "./_generated/server"
+
+export const getIsSubscribed = query({
+    args: { orgId: v.optional(v.string()) },
+    handler: async (ctx, args) => {
+        if (!args.orgId) {
+            return false;
+        }
+        const orgSubscription = await ctx.db
+            .query("orgSubscription")
+            .withIndex("by_org", (q) => q.eq("orgId", args.orgId as string))
+            .unique();
+        const periodEnd = orgSubscription?.stripeCurrentPeriodEnd;
+
+        const isSubscribed = periodEnd && periodEnd > Date.now();
+
+        return isSubscribed;
+    }
+})
 
 export const create = internalMutation({
     args: {
@@ -39,7 +57,20 @@ export const update = internalMutation({
         stripeCurrentPeriodEnd
     }) => {
         try {
-            const existingSubscription = await ctx.db.query("orgSubscription").withIndex("by_subscription", (q) => q.eq("stripeSubscriptionId", stripeSubscriptionId)).unique()
+            const existingSubscription = await ctx.db
+                .query("orgSubscription")
+                .withIndex("by_subscription", (q) =>
+                    q.eq("stripeSubscriptionId", stripeSubscriptionId)
+                )
+                .unique()
+            if (!existingSubscription) {
+                throw new Error("Subscription not found")
+            }
+
+            await ctx.db.patch(existingSubscription._id, {
+                stripeCurrentPeriodEnd
+            })
+            return { success: true }
         } catch (e) {
             console.error(e)
             return { success: false }

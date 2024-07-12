@@ -5,10 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { OrganizationSwitcher } from "@clerk/nextjs";
+import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Badge } from "@/components/ui/badge";
 
 
 const font = Poppins({
@@ -20,6 +23,13 @@ export const OrgSidebar = () => {
 
     const searchParams = useSearchParams();
     const favorites = searchParams.get("favorites");
+
+    const { organization } = useOrganization();
+    const isSubscribed = useQuery(api.subscriptions.getIsSubscribed, {
+        orgId: organization?.id,
+    })
+
+
     return (
         <div className=" hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5">
             <Link href="/">
@@ -29,7 +39,10 @@ export const OrgSidebar = () => {
                         "font-semibold text-2xl",
                         font.className,
                     )}>MemoZ</span>
-                </div>
+                    <Badge variant="secondary">
+                        {isSubscribed ? "Pro" : "Free"}
+                    </Badge>
+                </div> 
             </Link>
             <OrganizationSwitcher hidePersonal appearance={{
                 elements: {
@@ -38,7 +51,7 @@ export const OrgSidebar = () => {
                         justifyContent: "center",
                         alignItems: "center",
                         width: "100%",
-                        maxWidth:"376px"
+                        maxWidth: "376px"
                     },
                     organizationSwitcherTrigger: {
                         padding: "6px",

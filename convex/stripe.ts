@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import { v } from "convex/values";
 
 import { action, internalAction } from "./_generated/server";
+import { internal } from "./_generated/api";
 
 const url = process.env.NEXT_PUBLIC_APP_URL;
 const stripe = new Stripe(
@@ -66,7 +67,30 @@ export const fulfill = internalAction({
             const session = event.data.object as Stripe.Checkout.Session;
 
             if (event.type === "checkout.session.completed") {
+                const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+
+                if (!session?.metadata?.orgId) {
+                    throw new Error("No orgId");
+                }
+
+                await ctx.runMutation(internal.subscriptions.create, {
+                    orgId: session.metadata.orgId as string,
+                    stripeSubscriptionId: subscription.id as string,
+                    stripeCustomerId: subscription.customer as string,
+                    stripePriceId: subscription.items.data[0].price.id as string,
+                    stripeCurrentPeriodEnd: subscription.current_period_end * 1000
+                })
                 console.log("Checkout session completed");
+            }
+            
+            if (event.type === "invoice.payment_succeeded") {
+                const subscription = await stripe.subscriptions.retrieve(
+                    session.subscription as string
+                )
+                await ctx.runMutation(internal.subscriptions.update, {
+                    stripeSubscriptionId: subscription.id as string,
+                    stripeCurrentPeriodEnd: subscription.current_period_end * 1000
+                })
             }
 
             return { success: true };
