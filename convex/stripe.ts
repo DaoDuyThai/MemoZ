@@ -14,6 +14,36 @@ const stripe = new Stripe(
     }
 );
 
+export const portal = action({
+    args: { orgId: v.string() },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Unauthorized");
+        }
+
+        if (!args.orgId) {
+            throw new Error("No organization id");
+        }
+
+        const orgSubscription = await ctx.runQuery(
+            internal.subscriptions.get, {
+            orgId: args.orgId
+        })
+
+        if (!orgSubscription) {
+            throw new Error("No subscription")
+        }
+
+        const session = await stripe.billingPortal.sessions.create({
+            customer: orgSubscription.stripeCustomerId,
+            return_url: url,
+        })
+
+        return session.url!;
+    }
+})
+
 export const pay = action({
     args: { orgId: v.string() },
 
@@ -82,7 +112,7 @@ export const fulfill = internalAction({
                 })
                 console.log("Checkout session completed");
             }
-            
+
             if (event.type === "invoice.payment_succeeded") {
                 const subscription = await stripe.subscriptions.retrieve(
                     session.subscription as string

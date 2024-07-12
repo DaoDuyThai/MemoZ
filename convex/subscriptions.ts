@@ -1,6 +1,16 @@
 import { v } from "convex/values"
 
-import { internalMutation, query } from "./_generated/server"
+import { internalMutation, internalQuery, query } from "./_generated/server"
+
+export const get = internalQuery({
+    args: { orgId: v.string() },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("orgSubscription")
+            .withIndex("by_org", (q) => q.eq("orgId", args.orgId))
+            .unique()
+    }
+})
 
 export const getIsSubscribed = query({
     args: { orgId: v.optional(v.string()) },

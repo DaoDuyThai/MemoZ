@@ -7,11 +7,12 @@ import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Star } from "lucide-react";
+import { Banknote, LayoutDashboard, Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useQuery } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 
 const font = Poppins({
@@ -29,6 +30,24 @@ export const OrgSidebar = () => {
         orgId: organization?.id,
     })
 
+    const portal = useAction(api.stripe.portal)
+    const pay = useAction(api.stripe.pay)
+    const [pending, setPending] = React.useState(false);
+    const onClick = async () => {
+        if (!organization?.id) return
+        setPending(true)
+        try {
+            const action = isSubscribed ? portal : pay
+            const redirectUrl = await action({
+                orgId: organization.id,
+            })
+            window.location.href = redirectUrl
+        } catch {
+            toast.error("Something went wrong")
+        } finally {
+            setPending(false)
+        }
+    }
 
     return (
         <div className=" hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5">
@@ -42,7 +61,7 @@ export const OrgSidebar = () => {
                     <Badge variant="secondary">
                         {isSubscribed ? "Pro" : "Free"}
                     </Badge>
-                </div> 
+                </div>
             </Link>
             <OrganizationSwitcher hidePersonal appearance={{
                 elements: {
@@ -76,6 +95,10 @@ export const OrgSidebar = () => {
                     }}>
                         <Star className="h-4 w-4 mr-2" /> Favourite boards
                     </Link>
+                </Button>
+                <Button onClick={onClick} disabled={pending} variant="ghost" size="lg" className="font-normal justify-start px-2 w-full">
+                    <Banknote className="h-4 w-4 mr-2" />
+                    {isSubscribed ? "Payment Settings" : "Upgrade to Pro"}
                 </Button>
             </div>
         </div>
