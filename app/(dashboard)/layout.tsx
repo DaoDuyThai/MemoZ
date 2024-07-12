@@ -1,5 +1,5 @@
 import { Sidebar } from "./_components/sidebar";
-import { OrgSidebar } from "./_components/orgs-sizebar";
+import { OrgSidebar } from "./_components/orgs-sidebar";
 import { Navbar } from "./_components/navbar";
 
 interface DashboardLayoutProps {
