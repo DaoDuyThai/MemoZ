@@ -10,9 +10,9 @@ const DashboardLayout = ({
     children,
 }: DashboardLayoutProps) => {
     return (
-        <main className="h-full ">
+        <main className="h-full w-screen md:w-fit" style={{ width: "100vw" }}>
             <Sidebar />
-            <div className="pl-[60px] h-full">
+            <div className="md:pl-[60px] h-full">
 
                 <div className="flex gap-x-3 h-full">
                     <OrgSidebar />
