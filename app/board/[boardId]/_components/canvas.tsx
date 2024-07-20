@@ -50,9 +50,12 @@ export const Canvas = ({
 
     const [touchStartDistance, setTouchStartDistance] = useState<number | null>(null);
     const [initialZoom, setInitialZoom] = useState(camera.zoom);
+    const [isTouchZooming, setIsTouchZooming] = useState(false);
+
 
     const onTouchStart = useCallback((e: React.TouchEvent) => {
         if (e.touches.length === 2) {
+            setIsTouchZooming(true);
             const touch1 = e.touches[0];
             const touch2 = e.touches[1];
             const distance = Math.sqrt(
@@ -99,6 +102,7 @@ export const Canvas = ({
     const onTouchEnd = useCallback(() => {
         setTouchStartDistance(null);
         setInitialZoom(camera.zoom);
+        setIsTouchZooming(false);
     }, [camera.zoom]);
 
 
@@ -321,7 +325,10 @@ export const Canvas = ({
     const onPointerMove = useMutation(
         ({ setMyPresence }, e: React.PointerEvent) => {
             e.preventDefault();
-
+            if (isTouchZooming) {
+                // Skip processing pointer move if a touch zoom is in progress
+                return;
+            }
             const current = pointerEventToCanvasPoint(e, camera);
 
             if (canvasState.mode === CanvasMode.Pressing) {
@@ -338,7 +345,7 @@ export const Canvas = ({
 
             setMyPresence({ cursor: current });
         },
-        [camera, canvasState, resizeSelectedLayer, translateSelectedLayer, continueDrawing, updateSelectionNet, startMultiSelection]
+        [camera, canvasState, resizeSelectedLayer, translateSelectedLayer, continueDrawing, updateSelectionNet, startMultiSelection, isTouchZooming]
     );
 
     const onPointerLeave = useMutation(({ setMyPresence }) => {
@@ -348,7 +355,10 @@ export const Canvas = ({
     const onPointerDown = useCallback(
         (e: React.PointerEvent) => {
             const point = pointerEventToCanvasPoint(e, camera);
-
+            if (isTouchZooming) {
+                // Skip pointer down logic if a touch zoom is in progress
+                return;
+            }
             if (canvasState.mode === CanvasMode.Inserting) {
                 return;
             }
@@ -360,7 +370,7 @@ export const Canvas = ({
 
             setCanvasState({ origin: point, mode: CanvasMode.Pressing });
         },
-        [camera, canvasState.mode, setCanvasState, startDrawing]
+        [camera, canvasState.mode, setCanvasState, startDrawing, isTouchZooming]
     );
 
     const onPointerUp = useMutation((
