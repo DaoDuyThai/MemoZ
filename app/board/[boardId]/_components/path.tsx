@@ -13,7 +13,7 @@ interface pathProps {
 export const Path = ({
     x, y, points, fill, onPointerDown, stroke
 }: pathProps) => {
-    console.log("aaaa")
+    // console.log("aaaa")
     return (
         <path
             className=""

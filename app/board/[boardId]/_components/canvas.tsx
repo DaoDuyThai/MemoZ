@@ -140,32 +140,38 @@ export const Canvas = ({
 
     const translateSelectedLayer = useMutation(
         ({ storage, self }, point: Point) => {
-          if (canvasState.mode !== CanvasMode.Translating) {
-            return;
-          }
-      
-          const { initialCursor, initialLayerPosition } = canvasState;
-          const offset = {
-            x: (point.x - initialCursor.x) / camera.zoom,
-            y: (point.y - initialCursor.y) / camera.zoom,
-          };
-      
-          const liveLayers = storage.get("layers");
-      
-          for (const id of self.presence.selection) {
-            const layer = liveLayers.get(id);
-            if (layer) {
-              layer.update({
-                x: initialLayerPosition.x + offset.x,
-                y: initialLayerPosition.y + offset.y,
-              });
+            if (canvasState.mode !== CanvasMode.Translating) {
+                return;
             }
-          }
-      
-          setCanvasState({ mode: CanvasMode.Translating, current: point , initialCursor: point, initialLayerPosition: point});
+
+            const { initialCursor, initialLayerPosition, clickOffset } = canvasState;
+            const offset = {
+                x: (point.x - initialCursor.x) / camera.zoom,
+                y: (point.y - initialCursor.y) / camera.zoom,
+            };
+
+            const liveLayers = storage.get("layers");
+
+            for (const id of self.presence.selection) {
+                const layer = liveLayers.get(id);
+                if (layer) {
+                    layer.update({
+                        x: initialLayerPosition.x + offset.x,
+                        y: initialLayerPosition.y + offset.y,
+                    });
+                }
+            }
+
+            setCanvasState({
+                mode: CanvasMode.Translating,
+                current: point,
+                initialCursor: point,
+                initialLayerPosition: point,
+                clickOffset
+            });
         },
         [canvasState, camera]
-      );
+    );
 
     const unselectLayers = useMutation((
         { self, setMyPresence }
@@ -403,31 +409,32 @@ export const Canvas = ({
 
     const onLayerPointerDown = useMutation(
         ({ self, setMyPresence, storage }, e: React.PointerEvent, layerId: string) => {
-          if (canvasState.mode === CanvasMode.Pencil || canvasState.mode === CanvasMode.Inserting) {
-            return;
-          }
-          history.pause();
-          e.stopPropagation();
-      
-          const point = pointerEventToCanvasPoint(e, camera);
-          const liveLayers = storage.get("layers");
-          const layer = liveLayers.get(layerId);
-      
-          if (layer) {
-            setCanvasState({
-              mode: CanvasMode.Translating,
-              initialCursor: point,
-              initialLayerPosition: { x: layer.get("x"), y: layer.get("y") },
-              current: point
-            });
-          }
-      
-          if (!self.presence.selection.includes(layerId)) {
-            setMyPresence({ selection: [layerId] }, { addToHistory: true });
-          }
+            if (canvasState.mode === CanvasMode.Pencil || canvasState.mode === CanvasMode.Inserting) {
+                return;
+            }
+            history.pause();
+            e.stopPropagation();
+
+            const point = pointerEventToCanvasPoint(e, camera);
+            const liveLayers = storage.get("layers");
+            const layer = liveLayers.get(layerId);
+
+            if (layer) {
+                setCanvasState({
+                    mode: CanvasMode.Translating,
+                    initialCursor: point,
+                    initialLayerPosition: { x: layer.get("x"), y: layer.get("y") },
+                    current: point,
+                    clickOffset: point
+                });
+            }
+
+            if (!self.presence.selection.includes(layerId)) {
+                setMyPresence({ selection: [layerId] }, { addToHistory: true });
+            }
         },
         [setCanvasState, camera, history, canvasState.mode]
-      );
+    );
 
     const layerIdsToColorSelection = useMemo(() => {
         const layerIdsToColorSelection: Record<string, string> = {}
@@ -461,10 +468,7 @@ export const Canvas = ({
                         break;
                     }
                 }
-                case "Backspace": {
-                    deleteLayers();
-                    break;
-                }
+                
                 case "Delete": {
                     deleteLayers();
                     break;
@@ -493,8 +497,7 @@ export const Canvas = ({
                 undo={history.undo} />
             <SelectionTools
                 camera={camera}
-                setLastUsedColor={setLastUsedColor} 
-                />
+                setLastUsedColor={setLastUsedColor} />
             <svg
                 className="h-[100vh] w-[100vw]"
                 onWheel={onWheel}

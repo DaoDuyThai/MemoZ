@@ -106,6 +106,7 @@ export type CanvasState =
       initialCursor: Point;
       initialLayerPosition: Point;
       current: Point;
+      clickOffset: Point;
     }
   | {
       mode: CanvasMode.Inserting;
