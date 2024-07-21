@@ -15,13 +15,16 @@ export function connectionIdToColor(connectionId: number): string {
 export function pointerEventToCanvasPoint(
   e: React.PointerEvent,
   camera: Camera
-) {
-  return {
-    x: Math.round(e.clientX) - camera.x,
-    y: Math.round(e.clientY) - camera.y
-  }
-}
+): Point {
+  // Get the canvas bounding rectangle
+  const rect = e.currentTarget.getBoundingClientRect();
 
+  // Calculate the position in canvas coordinates
+  const x = (e.clientX - rect.left - camera.x) / camera.zoom;
+  const y = (e.clientY - rect.top - camera.y) / camera.zoom;
+
+  return { x: Math.round(x), y: Math.round(y) };
+}
 export function colorToCss(color: Color) {
   return `#${color.r.toString(16).padStart(2, "0")}${color.g.toString(16).padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`
 }

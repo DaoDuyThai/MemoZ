@@ -39,13 +39,71 @@ export const Canvas = ({
 
     const [canvasState, setCanvasState] = useState<CanvasState>({ mode: CanvasMode.None })
 
-    const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 })
+    const [camera, setCamera] = useState<Camera>({ x: 0, y: 0, zoom: 1 })
     const [lastUsedColor, setLastUsedColor] = useState<Color>({
         r: 0,
         g: 0,
         b: 0,
     })
 
+    //mobile zoom
+
+    const [touchStartDistance, setTouchStartDistance] = useState<number | null>(null);
+    const [initialZoom, setInitialZoom] = useState(camera.zoom);
+    const [isTouchZooming, setIsTouchZooming] = useState(false);
+
+
+    const onTouchStart = useCallback((e: React.TouchEvent) => {
+        if (e.touches.length === 2) {
+            setIsTouchZooming(true);
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const distance = Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) +
+                Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+            setTouchStartDistance(distance);
+            setInitialZoom(camera.zoom);
+        }
+    }, [camera.zoom]);
+
+
+    const onTouchMove = useCallback((e: React.TouchEvent) => {
+        if (e.touches.length === 2) {
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const distance = Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) +
+                Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+
+            if (touchStartDistance) {
+                const zoomRatio = distance / touchStartDistance; // Calculated ratio
+                const newZoom = Math.max(0.1, Math.min(10, initialZoom * zoomRatio)); // Clamp zoom
+
+                const rect = e.currentTarget.getBoundingClientRect();
+                const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+                const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+
+                const touchZoomRatio = newZoom / camera.zoom; // Renamed variable
+                const newCameraX = centerX - touchZoomRatio * (centerX - camera.x);
+                const newCameraY = centerY - touchZoomRatio * (centerY - camera.y);
+
+                setCamera({
+                    x: newCameraX,
+                    y: newCameraY,
+                    zoom: newZoom
+                });
+            }
+        }
+    }, [camera, touchStartDistance, initialZoom]);
+
+
+    const onTouchEnd = useCallback(() => {
+        setTouchStartDistance(null);
+        setInitialZoom(camera.zoom);
+        setIsTouchZooming(false);
+    }, [camera.zoom]);
 
 
     useDisableScrollBounce();
@@ -80,33 +138,40 @@ export const Canvas = ({
         setCanvasState({ mode: CanvasMode.None })
     }, [lastUsedColor])
 
-    const translateSelectedLayer = useMutation((
-        { storage, self },
-        point: Point,
-    ) => {
-        if (canvasState.mode !== CanvasMode.Translating) {
-            return;
-        }
-        const offset = {
-            x: point.x - canvasState.current.x,
-            y: point.y - canvasState.current.y,
-        }
-
-        const liveLayers = storage.get("layers")
-
-        for (const id of self.presence.selection) {
-            const layer = liveLayers.get(id)
-            if (layer) {
-                layer.update({
-                    x: layer.get("x") + offset.x,
-                    y: layer.get("y") + offset.y,
-                })
+    const translateSelectedLayer = useMutation(
+        ({ storage, self }, point: Point) => {
+            if (canvasState.mode !== CanvasMode.Translating) {
+                return;
             }
-        }
 
-        setCanvasState({ mode: CanvasMode.Translating, current: point })
+            const { initialCursor, initialLayerPosition, clickOffset } = canvasState;
+            const offset = {
+                x: (point.x - initialCursor.x) / camera.zoom,
+                y: (point.y - initialCursor.y) / camera.zoom,
+            };
 
-    }, [canvasState])
+            const liveLayers = storage.get("layers");
+
+            for (const id of self.presence.selection) {
+                const layer = liveLayers.get(id);
+                if (layer) {
+                    layer.update({
+                        x: initialLayerPosition.x + offset.x,
+                        y: initialLayerPosition.y + offset.y,
+                    });
+                }
+            }
+
+            setCanvasState({
+                mode: CanvasMode.Translating,
+                current: point,
+                initialCursor: point,
+                initialLayerPosition: point,
+                clickOffset
+            });
+        },
+        [canvasState, camera]
+    );
 
     const unselectLayers = useMutation((
         { self, setMyPresence }
@@ -240,67 +305,80 @@ export const Canvas = ({
         setCanvasState({ mode: CanvasMode.Resizing, initialBounds, corner })
     }, [history])
 
+
+
+
     const onWheel = useCallback((e: React.WheelEvent) => {
-        // console.log({ x: e.deltaX, y: e.deltaY });
-        setCamera((camera) => ({
-            x: camera.x - e.deltaX,
-            y: camera.y - e.deltaY
-        }))
-    }, [])
+        e.preventDefault();
 
-    const onPointerMove = useMutation((
-        { setMyPresence },
-        e: React.PointerEvent
-    ) => {
-        e.preventDefault()
+        const zoomSensitivity = 0.001;
+        const newZoom = Math.max(0.1, camera.zoom - e.deltaY * zoomSensitivity); // Prevent zooming out too far
 
-        const current = pointerEventToCanvasPoint(e, camera)
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
 
-        if (canvasState.mode === CanvasMode.Pressing) {
-            console.log("pressing")
-            startMultiSelection(current, canvasState.origin)
-        } else if (canvasState.mode === CanvasMode.SelectionNet) {
-            console.log("selection net")
-            updateSelectionNet(current, canvasState.origin)
-        } else if (canvasState.mode == CanvasMode.Translating) {
-            console.log("Translating")
-            translateSelectedLayer(current)
-        } else if (canvasState.mode === CanvasMode.Resizing) {
-            console.log("Resizing")
-            resizeSelectedLayer(current)
-        } else if (canvasState.mode === CanvasMode.Pencil) {
-            console.log("Pencil")
-            continueDrawing(current, e)
-        }
+        // Calculate new camera position to keep the zoom centered on the mouse position
+        const wheelZoomRatio = newZoom / camera.zoom; // Renamed variable
+        const newCameraX = mouseX - wheelZoomRatio * (mouseX - camera.x);
+        const newCameraY = mouseY - wheelZoomRatio * (mouseY - camera.y);
 
+        setCamera({
+            x: newCameraX,
+            y: newCameraY,
+            zoom: newZoom
+        });
+    }, [camera]);
 
+    const onPointerMove = useMutation(
+        ({ setMyPresence }, e: React.PointerEvent) => {
+            e.preventDefault();
+            if (isTouchZooming) {
+                // Skip processing pointer move if a touch zoom is in progress
+                return;
+            }
+            const current = pointerEventToCanvasPoint(e, camera);
 
-        // console.log(current);
+            if (canvasState.mode === CanvasMode.Pressing) {
+                startMultiSelection(current, canvasState.origin);
+            } else if (canvasState.mode === CanvasMode.SelectionNet) {
+                updateSelectionNet(current, canvasState.origin);
+            } else if (canvasState.mode === CanvasMode.Translating) {
+                translateSelectedLayer(current);
+            } else if (canvasState.mode === CanvasMode.Resizing) {
+                resizeSelectedLayer(current);
+            } else if (canvasState.mode === CanvasMode.Pencil) {
+                continueDrawing(current, e);
+            }
 
-        setMyPresence({ cursor: current })
-    }, [camera, canvasState, resizeSelectedLayer, translateSelectedLayer, continueDrawing, updateSelectionNet, startMultiSelection])
+            setMyPresence({ cursor: current });
+        },
+        [camera, canvasState, resizeSelectedLayer, translateSelectedLayer, continueDrawing, updateSelectionNet, startMultiSelection, isTouchZooming]
+    );
 
     const onPointerLeave = useMutation(({ setMyPresence }) => {
         setMyPresence({ cursor: null })
     }, [])
 
-    const onPointerDown = useCallback((
-        e: React.PointerEvent
-    ) => {
-        const point = pointerEventToCanvasPoint(e, camera)
+    const onPointerDown = useCallback(
+        (e: React.PointerEvent) => {
+            const point = pointerEventToCanvasPoint(e, camera);
+            if (isTouchZooming) {
+                // Skip pointer down logic if a touch zoom is in progress
+                return;
+            }
+            if (canvasState.mode === CanvasMode.Inserting) {
+                return;
+            }
 
-        if (canvasState.mode === CanvasMode.Inserting) {
-            return;
-        }
+            if (canvasState.mode === CanvasMode.Pencil) {
+                startDrawing(point, e.pressure);
+                return;
+            }
 
-        if (canvasState.mode === CanvasMode.Pencil) {
-            console.log("pencil mode enabled")
-            startDrawing(point, e.pressure)
-            return;
-        }
-
-        setCanvasState({ origin: point, mode: CanvasMode.Pressing })
-    }, [camera, canvasState.mode, setCanvasState, startDrawing])
+            setCanvasState({ origin: point, mode: CanvasMode.Pressing });
+        },
+        [camera, canvasState.mode, setCanvasState, startDrawing, isTouchZooming]
+    );
 
     const onPointerUp = useMutation((
         { }, e
@@ -329,25 +407,34 @@ export const Canvas = ({
 
     const selections = useOthersMapped((other) => other.presence.selection)
 
-    const onLayerPointerDown = useMutation((
-        { self, setMyPresence },
-        e: React.PointerEvent,
-        layerId: string
-    ) => {
-        if (canvasState.mode === CanvasMode.Pencil || canvasState.mode === CanvasMode.Inserting) {
-            return;
-        }
-        history.pause();
-        e.stopPropagation();
+    const onLayerPointerDown = useMutation(
+        ({ self, setMyPresence, storage }, e: React.PointerEvent, layerId: string) => {
+            if (canvasState.mode === CanvasMode.Pencil || canvasState.mode === CanvasMode.Inserting) {
+                return;
+            }
+            history.pause();
+            e.stopPropagation();
 
-        const point = pointerEventToCanvasPoint(e, camera)
+            const point = pointerEventToCanvasPoint(e, camera);
+            const liveLayers = storage.get("layers");
+            const layer = liveLayers.get(layerId);
 
-        if (!self.presence.selection.includes(layerId)) {
-            setMyPresence({ selection: [layerId] }, { addToHistory: true })
-        }
-        setCanvasState({ mode: CanvasMode.Translating, current: point })
+            if (layer) {
+                setCanvasState({
+                    mode: CanvasMode.Translating,
+                    initialCursor: point,
+                    initialLayerPosition: { x: layer.get("x"), y: layer.get("y") },
+                    current: point,
+                    clickOffset: point
+                });
+            }
 
-    }, [setCanvasState, camera, history, canvasState.mode])
+            if (!self.presence.selection.includes(layerId)) {
+                setMyPresence({ selection: [layerId] }, { addToHistory: true });
+            }
+        },
+        [setCanvasState, camera, history, canvasState.mode]
+    );
 
     const layerIdsToColorSelection = useMemo(() => {
         const layerIdsToColorSelection: Record<string, string> = {}
@@ -381,10 +468,7 @@ export const Canvas = ({
                         break;
                     }
                 }
-                case "Backspace": {
-                    deleteLayers();
-                    break;
-                }
+                
                 case "Delete": {
                     deleteLayers();
                     break;
@@ -421,9 +505,11 @@ export const Canvas = ({
                 onPointerLeave={onPointerLeave}
                 onPointerUp={onPointerUp}
                 onPointerDown={onPointerDown}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
             >
-
-                <g style={{ transform: `translate(${camera.x}px, ${camera.y}px)` }}>
+                <g style={{ transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.zoom})` }}>
                     {layerIds.map((layerId) => (
                         <LayerPreview
                             key={layerId}
