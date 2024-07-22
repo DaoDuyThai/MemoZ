@@ -16,11 +16,11 @@ import type {
 } from "convex/server";
 import type * as board from "../board.js";
 import type * as boards from "../boards.js";
-import type * as messages from "../messages.js";
-import type * as voice from "../voice.js";
 import type * as http from "../http.js";
+import type * as messages from "../messages.js";
 import type * as stripe from "../stripe.js";
 import type * as subscriptions from "../subscriptions.js";
+import type * as voice from "../voice.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -33,11 +33,11 @@ import type * as subscriptions from "../subscriptions.js";
 declare const fullApi: ApiFromModules<{
   board: typeof board;
   boards: typeof boards;
-  messages: typeof messages;
-  voice: typeof voice;
   http: typeof http;
+  messages: typeof messages;
   stripe: typeof stripe;
   subscriptions: typeof subscriptions;
+  voice: typeof voice;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
