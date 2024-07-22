@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react"
 import { useEffect, useState } from "react";
 // import "./css/chat.css";
-export default function Chart({roomId} : {roomId: string}) {
+export default function Chat({roomId} : {roomId: string}) {
     const messages = useQuery(api.messages.getByOrganizationId, { organizationId: roomId });
     const sendMessage = useMutation(api.messages.send);
     const [newMessageText, setNewMessageText] = useState("");

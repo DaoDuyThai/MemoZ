@@ -1,7 +1,7 @@
 import { Canvas } from "./_components/canvas";
 import { Room } from "@/components/room";
 import { Loading } from "./_components/loading";
-import Chart from "@/components/chat";
+import Chat from "@/components/chat";
 
 interface BoardIdPageProps {
     params: {
@@ -17,7 +17,7 @@ const BoardIdPage = ({
     return (
         <Room roomId={params.boardId} fallback={<Loading />}>
             <Canvas boardId={params.boardId} />
-            <Chart roomId={params.boardId}/>
+            <Chat roomId={params.boardId}/>
         </Room>
     )
 }
