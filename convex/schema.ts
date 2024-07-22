@@ -34,5 +34,14 @@ export default defineSchema({
         channel: v.string(),
         token: v.string(),
         expire: v.number(),
-    })   
+    }),   
+    orgSubscription: defineTable({
+        orgId: v.string(),
+        stripeCustomerId: v.string(),
+        stripeSubscriptionId: v.string(),
+        stripePriceId: v.string(),
+        stripeCurrentPeriodEnd: v.number(),
+    })
+        .index("by_org", ["orgId"])
+        .index("by_subscription", ["stripeSubscriptionId"]),
 })

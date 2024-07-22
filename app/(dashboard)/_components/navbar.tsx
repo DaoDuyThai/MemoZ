@@ -5,9 +5,12 @@ import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs
 import React from "react";
 import { SearchInput } from "./search-input";
 import { InviteButton } from "./invite-button";
+import { useSearchParams } from "next/navigation";
 
 export const Navbar = () => {
     const { organization } = useOrganization();
+    const searchParams = useSearchParams();
+    const favorites = searchParams.get("favorites");
     return (
         <div className="flex items-center gap-x-4 p-5 ">
             <div className="hidden lg:flex-1 lg:flex ">

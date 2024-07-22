@@ -7,6 +7,7 @@ export type Color = {
 export type Camera = {
     x: number,
     y: number,
+    zoom: number
 }
 
 export enum LayerType {
@@ -88,34 +89,37 @@ export enum Side {
 }
 
 export type CanvasState =
-    | {
-        mode: CanvasMode.None,
+  | {
+      mode: CanvasMode.None;
     }
-    | {
-        mode: CanvasMode.Pressing,
-        origin: Point;
+  | {
+      mode: CanvasMode.Pressing;
+      origin: Point;
     }
-    | {
-        mode: CanvasMode.SelectionNet,
-        origin: Point;
-        current?: Point;
+  | {
+      mode: CanvasMode.SelectionNet;
+      origin: Point;
+      current?: Point;
     }
-    | {
-        mode: CanvasMode.Translating,
-        current: Point;
+  | {
+      mode: CanvasMode.Translating;
+      initialCursor: Point;
+      initialLayerPosition: Point;
+      current: Point;
+      clickOffset: Point;
     }
-    | {
-        mode: CanvasMode.Inserting,
-        layerType: LayerType.Ellipse | LayerType.Rectangle | LayerType.Text | LayerType.Note,
+  | {
+      mode: CanvasMode.Inserting;
+      layerType: LayerType.Ellipse | LayerType.Rectangle | LayerType.Text | LayerType.Note;
     }
-    | {
-        mode: CanvasMode.Resizing,
-        initialBounds: XYWH;
-        corner: Side;
+  | {
+      mode: CanvasMode.Resizing;
+      initialBounds: XYWH;
+      corner: Side;
     }
-    | {
-        mode: CanvasMode.Pencil,
-    }
+  | {
+      mode: CanvasMode.Pencil;
+    };
 
 
 
