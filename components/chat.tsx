@@ -32,7 +32,7 @@ export default function Chat({roomId} : {roomId: string}) {
     }, [messages]);
 
     return (
-        <div className="fixed right-0 bottom-0">
+        <div className="hidden md:block fixed right-0 bottom-0">
             <header className="flex justify-between p-2 bg-[#81e18c] w-[300px]">
                 <h1 className="text-xl">MemoZ Chat</h1>
                 <button className="text-xl" id="hideButton">__</button>
