@@ -50,6 +50,7 @@ export const create = mutation({
             throw new Error("Organization has reached the maximum number of boards")
         }
 
+        
         console.log(randomImage, "TEST")
         const board = await ctx.db.insert("boards", {
             title: args.title,
