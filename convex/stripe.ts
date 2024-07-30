@@ -96,6 +96,7 @@ export const fulfill = internalAction({
 
             const session = event.data.object as Stripe.Checkout.Session;
 
+            
             if (event.type === "checkout.session.completed") {
                 const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
 
