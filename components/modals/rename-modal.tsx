@@ -72,7 +72,6 @@ export const RenameModal = () => {
                             submit
                         </Button>
                     </DialogFooter>
-
                 </form>
             </DialogContent>
 
